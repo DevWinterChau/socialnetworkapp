@@ -1,13 +1,29 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:socialnetworkapp/appstate_bloc.dart';
+import 'package:socialnetworkapp/modules/authentication/bloc/authentication_bloc.dart';
+import 'package:socialnetworkapp/modules/authentication/enum/LoginState.dart';
 import 'package:socialnetworkapp/modules/authentication/login/HomePage.dart';
-import 'package:socialnetworkapp/modules/authentication/login/UserController.dart';
 
-class LoginPage extends StatelessWidget {
+import '../../../providers/bloc_provider.dart';
+import 'UserController.dart';
+
+class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
+  @override
+  _LoginPageState createState() => _LoginPageState();
+
+}
+
+class _LoginPageState extends State<LoginPage> {
+  AppStateBloc? get appStateBloc => BloCProvider.of<AppStateBloc>(context);
+  AuthenTicationBloc? get authenbloc =>
+      BloCProvider.of<AuthenTicationBloc>(context);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,18 +37,15 @@ class LoginPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-              onPressed: () async{
-                final user = await UserController.signInWithGoogle();
-                if(user != null) {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => const HomePage()));
-                }
+              onPressed: () async {
+                await _signInWithGoogle();
               },
+
               style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey,
                   textStyle: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16
+                      color: Colors.white,
+                      fontSize: 16
                   )
               ),
               child: Row(
@@ -49,7 +62,7 @@ class LoginPage extends StatelessWidget {
                       )
                   ),
                   Text("Sign In with Google"
-                  ,style: TextStyle(fontSize: 16),),
+                    ,style: TextStyle(fontSize: 16),),
                 ],
               ),
             ),
@@ -58,4 +71,58 @@ class LoginPage extends StatelessWidget {
       ),
     );
   }
+  Future<void> _signInWithGoogle() async {
+    try {
+      final loginState = await authenbloc!.loginWithGmail();
+      switch (loginState) {
+        case LoginState.success:
+          return _changeAppState();
+        case LoginState.isNewUser:
+        // Xử lý trường hợp isNewUser
+          break;
+        default:
+        // Xử lý trường hợp khác (nếu cần)
+          break;
+      }
+    } on PlatformException catch (e) {
+      _handleErrorPlatform(e);
+    } catch (e) {
+      _showDialog(e.toString());
+    }
+  }
+
+  void _showDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Error"),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+  Future<void> _changeAppState() async{
+    await appStateBloc!.changeAppState(AppState.authorized);
+  }
+  void _handleErrorPlatform(PlatformException exception) {
+    // Xử lý lỗi dựa trên exception từ nền tảng
+    // Ví dụ: hiển thị thông báo cụ thể cho từng mã lỗi
+    String errorMessage = "An error occurred.";
+    if (exception.code == "your_specific_error_code") {
+      errorMessage = "Specific error message for this code.";
+    }
+    _showDialog(errorMessage);
+  }
 }
+
+
+

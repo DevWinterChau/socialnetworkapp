@@ -1,15 +1,32 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:socialnetworkapp/modules/authentication/login/UserController.dart';
 import 'package:socialnetworkapp/modules/authentication/login/login_page.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key});
+import '../../../appstate_bloc.dart';
+import '../../../providers/bloc_provider.dart';
+import '../bloc/authentication_bloc.dart';
+import 'UserController.dart';
 
+
+
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
+
+  @override
+  _HomePageState createState() => _HomePageState();
+
+}
+
+class _HomePageState extends State<HomePage> {
+  AppStateBloc? get appStateBloc => BloCProvider.of<AppStateBloc>(context);
+  AuthenTicationBloc? get authenbloc =>
+      BloCProvider.of<AuthenTicationBloc>(context);
+  final user = FirebaseAuth.instance.currentUser!;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: UserController.user != null
-          ? Center(
+      body:
+      Center(
         child: Container(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -17,13 +34,13 @@ class HomePage extends StatelessWidget {
             children: [
               ClipOval(
                 child: Image.network(
-                  UserController.user!.photoURL ?? '',
+                  user!.photoURL ?? '',
                   height: 80,
                   width: 80,
                 ),
               ),
               SizedBox(height: 5),
-              Text('Xin chào ${UserController.user!.displayName ?? ''}'),
+              Text('Xin chào ${user!.displayName ?? ''}'),
               SizedBox(height: 10,),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -34,22 +51,20 @@ class HomePage extends StatelessWidget {
                   ),
                 ),
                 onPressed: () async {
-                  final result = await UserController.signOut();
-                  if (result) {
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginPage()),
-                          (route) => false,
-                    );
-                  }
+                  await _changeAppState();
                 },
                 child: Text("SignOut"),
               ),
             ],
           ),
         ),
-      )
-          : Center(child: CircularProgressIndicator()),
-    );
+      ),
+     );
+  }
+    Future<void> _changeAppState() async{
+      await appStateBloc!.changeAppState(AppState.unAuthorized);
+
   }
 }
+
+

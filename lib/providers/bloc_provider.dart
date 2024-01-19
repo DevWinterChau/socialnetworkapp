@@ -7,7 +7,6 @@ abstract class BlocBase{
 }
 
 class BloCProvider<T extends BlocBase> extends StatefulWidget{
-
   final Widget child;
   final T? bloc;
   const BloCProvider({
@@ -24,6 +23,10 @@ class BloCProvider<T extends BlocBase> extends StatefulWidget{
         .getElementForInheritedWidgetOfExactType<_BloCProviderInherited<T>>()
         ?.widget as _BloCProviderInherited<T>?;
     return provider?.bloc;
+  }
+  @override
+  void dispose() {
+
   }
 
 }

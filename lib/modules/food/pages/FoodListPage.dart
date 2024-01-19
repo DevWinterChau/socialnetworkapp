@@ -45,6 +45,7 @@ class _ProductListState extends State<ProductList> {
   @override
   void initState() {
     super.initState();
+    // Them sự kiện
     _foodListBloc.add("getAllFoodListByUserId");
   }
 
