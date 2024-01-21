@@ -22,6 +22,7 @@ class _HomePageState extends State<HomePage> {
   AuthenTicationBloc? get authenbloc =>
       BloCProvider.of<AuthenTicationBloc>(context);
   final user = FirebaseAuth.instance.currentUser!;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

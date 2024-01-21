@@ -1,4 +1,4 @@
 class ConfigEnv{
-  static String getDomainAPI = "https://6a55-123-31-55-27.ngrok-free.app/api/";
+  static String getDomainAPI = "https://14b1-1-53-113-242.ngrok-free.app/api/";
 
 }
