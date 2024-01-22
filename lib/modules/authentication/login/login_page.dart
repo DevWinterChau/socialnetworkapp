@@ -1,23 +1,14 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:socialnetworkapp/appstate_bloc.dart';
 import 'package:socialnetworkapp/modules/authentication/bloc/authentication_bloc.dart';
 import 'package:socialnetworkapp/modules/authentication/enum/LoginState.dart';
-import 'package:socialnetworkapp/modules/authentication/login/HomePage.dart';
-
 import '../../../providers/bloc_provider.dart';
-import 'UserController.dart';
-
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
-
   @override
   _LoginPageState createState() => _LoginPageState();
-
 }
 
 class _LoginPageState extends State<LoginPage> {
@@ -74,6 +65,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _signInWithGoogle() async {
     try {
       final loginState = await authenbloc!.loginWithGmail();
+      print('Trạng thái đăng nhập : $loginState');
       switch (loginState) {
         case LoginState.success:
           return _changeAppState();

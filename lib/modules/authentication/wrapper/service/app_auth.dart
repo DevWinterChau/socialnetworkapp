@@ -11,8 +11,6 @@ class AppAuth{
 
   Future<Data?> sigInWithCredential(AuthenCredential credential) async{
     final login = await _signIn(credential);
-    print("Login " + login!.data!.accessToken!);
-
     if(login == null){
       return null;
     }
@@ -21,7 +19,6 @@ class AppAuth{
   }
 
   Future<void> SaveData(LoginData data) async{
-    print("Luu token thanhf coong");
     final tm = TokenManeger()..accessToken = data.data!.accessToken ?? '';
     tm.Save();
   }
@@ -30,12 +27,11 @@ class AppAuth{
       AuthenCredential credential
       ) async{
     try{
-      print(credential.url);
-      print(credential.asMap());
       final response = await _apiProvider.post(
         credential.url,
         data: credential.asMap(),
       );
+      print('dữ liệu trả về Server: $response');
       if(response.statusCode == 200){
         return LoginData.fromJson(response.data);
       }

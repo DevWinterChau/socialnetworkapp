@@ -4,7 +4,9 @@ import '../models/FoodListModel.dart';
 class FoodListRepo {
   Future<List<Data>?> TakeAllFoodListByUserId() async {
     try {
-      final res = await Dio(BaseOptions(baseUrl: "https://cca5-2402-800-6342-8760-60d9-2003-33a0-9ad1.ngrok-free.app/"))
+      final res = await Dio(
+          BaseOptions(
+              baseUrl: "https://cca5-2402-800-6342-8760-60d9-2003-33a0-9ad1.ngrok-free.app/"))
           .get("api/store/TakeAllFoodListByStoreId",
         queryParameters: {"Id": 1}, // User Id = 1
       );
@@ -24,7 +26,8 @@ class FoodListRepo {
       }
 
       List data = res.data['Data'];
-      return data.map((json) => Data.fromJson(json)).toList();
+      return data.map((json) =>
+          Data.fromJson(json)).toList();
     } catch (e) {
       print("Error: $e");
       rethrow;
