@@ -1,7 +1,7 @@
 
 import 'package:socialnetworkapp/modules/authentication/wrapper/auth_credential/AuthCredential.dart';
 import 'package:socialnetworkapp/providers/api_provider.dart';
-import 'package:socialnetworkapp/tokenmanager.dart';
+import 'package:socialnetworkapp/resource/tokenmanager.dart';
 
 import '../models/Login.dart';
 import '../models/LoginData.dart';

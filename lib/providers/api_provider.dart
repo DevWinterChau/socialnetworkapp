@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../config_env.dart';
-import '../tokenmanager.dart';
+import '../resource/tokenmanager.dart';
 
 class ApiProvider {
   late Dio _dio;
