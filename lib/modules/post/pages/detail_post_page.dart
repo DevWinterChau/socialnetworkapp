@@ -24,6 +24,7 @@ class _DetailPostPageState extends State<DetailPostPage> {
    AuthenTicationBloc? get _authenbloc => BloCProvider.of<AuthenTicationBloc>(context);
    late bool isShowReplyCmt = false;
    late int idCommentCurrent = 0;
+   late bool isShowReplyCmtList = false;
    late Post? post;
    @override
    void didChangeDependencies() {
@@ -92,51 +93,77 @@ class _DetailPostPageState extends State<DetailPostPage> {
                                   rowCommentReplyWidget(post!, commentItem.idComment ??0)
                                 ],
                               ) : SizedBox(height: 1,),
-                              // commentItem!.commentsReplay! != null ?
-                              //   ListView.builder(
-                              //   itemCount: commentItem!.commentsReplay!.length,
+
+                              commentItem.commentsReplay != null && commentItem.commentsReplay!.isNotEmpty ?
+                              GestureDetector(
+                                onTap: (){
+                                  setState(() {
+                                    isShowReplyCmtList = !isShowReplyCmtList;
+                                    idCommentCurrent = commentItem!.idComment!;
+                                  });
+                                },
+                                child:  Text("Đã có ${commentItem.commentsReplay!.length} bình luận ..."),
+                              )
+                                  :   SizedBox(height: 1),
+                              isShowReplyCmtList == true && idCommentCurrent == commentItem!.idComment
+                                  ? Column(
+                                children: List.generate(commentItem.commentsReplay!.length, (index) {
+                                  final itemReply = commentItem.commentsReplay![index];
+                                  return ListTile(
+                                      title: Text(itemReply.nameActor ?? ""),
+                                      subtitle: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(itemReply!.comment ?? ""),
+                                            SizedBox(height: 2),
+                                            Row(
+                                              children: [
+                                                Text(calculateTimeCmt(itemReply!.created), style: TextStyle(color: Colors.black, fontSize: 10)),
+                                                SizedBox(width: 5,),
+                                                GestureDetector(
+                                                  onTap: (){
+                                                    setState(() {
+                                                      isShowReplyCmt = !isShowReplyCmt;
+                                                      idCommentCurrent = itemReply!.idComment ?? 0;
+                                                    });
+                                                  },
+                                                  child: Text("Trả lời" , style: TextStyle(color: Colors.blue, fontSize: 10)),
+                                                ),
+                                              ],
+                                            ),
+                                            // Column(
+                                            //   crossAxisAlignment: CrossAxisAlignment.start,
+                                            //   children: [
+                                            //     rowCommentReplyWidget(post!, itemReply.idComment ??0)
+                                            //   ],
+                                            // )
+                                            // isShowReplyCmt == true && itemReply.idComment == idCommentCurrent
+                                            //     ? Column(
+                                            //   crossAxisAlignment: CrossAxisAlignment.start,
+                                            //   children: [
+                                            //     rowCommentReplyWidget(post!, itemReply.idComment ??0)
+                                            //   ],
+                                            // ) : SizedBox(height: 1,),
+                                          ]
+                                      )
+                                  );
+                                }),
+                              )
+                                  : SizedBox()
+
+                              // ListView.builder(
+                              //   itemCount: commentItem.commentsReplay?.length ?? 0,
                               //   itemBuilder: (BuildContext context, int index) {
-                              //     final commentItemReply = commentItem!.commentsReplay![index];
-                              //     int idComment = commentItemReply!.idComment!;
-                              //     return ListTile(
-                              //         title: Text(commentItemReply!.nameActor ?? ""),
-                              //         subtitle: Column(
-                              //           crossAxisAlignment: CrossAxisAlignment.start,
-                              //           children: [
-                              //             Text(commentItemReply!.comment ?? ""),
-                              //             SizedBox(height: 2),
-                              //             Row(
-                              //               children: [
-                              //                 Text(calculateTimeCmt(commentItem!.created), style: TextStyle(color: Colors.black, fontSize: 10)),
-                              //                 SizedBox(width: 5,),
-                              //                 GestureDetector(
-                              //                   onTap: (){
-                              //                     setState(() {
-                              //                       isShowReplyCmt = !isShowReplyCmt;
-                              //                       idCommentCurrent = idComment ;
-                              //                     });
-                              //                   },
-                              //                   child: Text("Trả lời" , style: TextStyle(color: Colors.blue, fontSize: 10)),
-                              //                 ),
-                              //               ],
-                              //             ),
-                              //             isShowReplyCmt == true && commentItemReply.idComment == idCommentCurrent
-                              //                 ? Column(
-                              //               crossAxisAlignment: CrossAxisAlignment.start,
-                              //               children: [
-                              //                 rowCommentReplyWidget(post!, commentItemReply.idComment ??0)
-                              //               ],
-                              //             ) : SizedBox(height: 1,),
-                              //           ],
-                              //         )
-                              //     );
+                              //     final commenreply = commentItem.commentsReplay?[index];
+                              //     return buildCommentAndReplies(commenreply!);
                               //   },
-                              // ): SizedBox()
+                              // )
                         ],
                           )
                         );
                       },
                     );
+
                   }
                   else{
                     return Center(child: CircularProgressIndicator(color: Colors.blueAccent,),);
@@ -273,6 +300,91 @@ class _DetailPostPageState extends State<DetailPostPage> {
        return "${commentDate.day} tháng ${commentDate.month} ${commentDate.year} lúc ${commentDate.hour}:${commentDate.minute}";
      }
    }
+   Widget buildCommentReply(CommentsReplay commentItemReply, int idCommentReply) {
+     return ListTile(
+       title: Text(commentItemReply.nameActor ?? ""),
+       subtitle: Column(
+         crossAxisAlignment: CrossAxisAlignment.start,
+         children: [
+           Text(commentItemReply.comment ?? ""),
+           SizedBox(height: 2),
+           Row(
+             children: [
+               Text(calculateTimeCmt(commentItemReply.created.toString()), style: TextStyle(color: Colors.black, fontSize: 10)),
+               SizedBox(width: 5,),
+               GestureDetector(
+                 onTap: () {
+                   setState(() {
+                     toggleShowReply(idCommentReply);
+                   });
+                 },
+                 child: Text("Trả lời", style: TextStyle(color: Colors.blue, fontSize: 10)),
+               ),
+             ],
+           ),
+           if (isShowReplyCmt == true && idCommentReply == idCommentCurrent)
+             Column(
+               crossAxisAlignment: CrossAxisAlignment.start,
+               children: [
+                 rowCommentReplyWidget(post!, idCommentReply?? 0)
+                 // ^ Assuming that 'rowCommentReplyWidget' is a valid function
+               ],
+             )
+           else
+             SizedBox(height: 1),
+         ],
+       ),
+     );
+   }
+
+   void toggleShowReply(int idComment) {
+     setState(() {
+       isShowReplyCmt = !isShowReplyCmt;
+       idCommentCurrent = idComment;
+     });
+   }
+
+
+   Widget buildCommentAndReplies(CommentsReplay commentItem) {
+     if (commentItem == null) {
+       return SizedBox();
+     }
+     print(commentItem);
+     return Column(
+       crossAxisAlignment: CrossAxisAlignment.start,
+       children: [
+         Text(commentItem.comment ?? ""),
+         SizedBox(height: 2),
+         Row(
+           children: [
+             Text(calculateTimeCmt(commentItem.created), style: TextStyle(color: Colors.black, fontSize: 10)),
+             SizedBox(width: 5,),
+             GestureDetector(
+               onTap: () {
+                 setState(() {
+                   isShowReplyCmtList = !isShowReplyCmtList;
+                   idCommentCurrent = commentItem.idComment!;
+                 });
+               },
+               child: Text("Đã có ${commentItem.commentsReplay?.length ?? 0} bình luận ..."),
+             ),
+           ],
+         ),
+         if (isShowReplyCmtList == true && idCommentCurrent == commentItem.idComment)
+           Column(
+             children: List.generate(commentItem.commentsReplay?.length ?? 0, (index) {
+               final itemReply = commentItem.commentsReplay![index];
+               return ListTile(
+                 title: Text(itemReply.nameActor ?? ""),
+                 subtitle: buildCommentAndReplies(itemReply),
+               );
+             }),
+           ),
+       ],
+     );
+   }
+
+
 
 }
 

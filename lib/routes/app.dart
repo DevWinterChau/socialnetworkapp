@@ -44,10 +44,11 @@ class _MainAppStateState extends State<MainApp> {
             builder: (context, snapshot) {
               if (snapshot.data == AppState.unAuthorized) {
                 return MaterialApp(
+                  debugShowCheckedModeBanner: false,
+                  initialRoute: '/',
                   onGenerateRoute: (settings) {
                     return Routes.UnauthorizedRoute(settings);
                   },
-                  initialRoute: '/',
                   home: BloCProvider(
                     child: LoginPage(),
                     bloc: authenticationBloc,
@@ -56,6 +57,7 @@ class _MainAppStateState extends State<MainApp> {
               }
               if (snapshot.data == AppState.authorized) {
                 return MaterialApp(
+                  debugShowCheckedModeBanner: false,
                   initialRoute: '/',
                    home: BloCProvider(
                      child: HomePage_Paging(),
@@ -67,8 +69,8 @@ class _MainAppStateState extends State<MainApp> {
                 );
               }
               if (snapshot.data == AppState.registerAccount) {
-                print(snapshot.data);
                 return MaterialApp(
+                  debugShowCheckedModeBanner: false,
                   initialRoute: '/',
                   home: BloCProvider(
                     child: RegisterAccountPage(),

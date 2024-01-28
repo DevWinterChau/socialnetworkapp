@@ -27,6 +27,42 @@ class _LoginPageState extends State<LoginPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 10, left: 10, right: 10, bottom: 10),
+              child: Column(
+
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Email và mật khẩu
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      hintText: 'Nhập địa chỉ Email ...'
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: 'Mật khẩu',
+                        hintText: 'Nhập mật khẩu ...'
+                    ),
+                  ),
+                  SizedBox(height: 16),
+
+                  // Nút đăng nhập bằng Email
+                  ElevatedButton(
+                    onPressed: () {
+
+                    },
+                    child: Text('Đăng nhập'),
+                  ),
+                ],
+              ),
+            ),
+            // Đăng nhập bằng Google
+            Text("Hoặc", style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic),),
+            SizedBox(height: 10),
             ElevatedButton(
               onPressed: () async {
                 await _signInWithGoogle();
@@ -42,6 +78,7 @@ class _LoginPageState extends State<LoginPage> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+
                   Container(
                     // decoration: BoxDecoration(color: Colors.blue),
                       child:
@@ -52,7 +89,7 @@ class _LoginPageState extends State<LoginPage> {
                         width: 40,
                       )
                   ),
-                  Text("Sign In with Google"
+                  Text("Đăng nhập với Google"
                     ,style: TextStyle(fontSize: 16),),
                 ],
               ),
@@ -116,6 +153,5 @@ class _LoginPageState extends State<LoginPage> {
     _showDialog(errorMessage);
   }
 }
-
 
 

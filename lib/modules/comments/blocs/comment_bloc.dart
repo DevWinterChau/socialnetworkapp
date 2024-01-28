@@ -18,22 +18,10 @@ class CommentRxDartBloc  extends BlocBase {
   Stream<CommentModelResponse?> get commentStream => stream.stream;
 
   Future<CommentModelResponse?> getCommentsByNewsId(int newsId) async {
-    print('Lấy comment từ newid $newsId');
     try {
       final results = await _repo.getCommentByNewsId(newsId);
       if (results != null && results.data != null) {
-        print(results.data!);
-        //
-        // if (!stream.hasValue) {
-        //   // Nếu stream chưa có giá trị, thêm giá trị đầu tiên
-        //   stream.sink.add(results);
-        // } else {
-        //   // Nếu stream đã có giá trị, thêm kết quả mới vào stream
-        //   stream.sink.add([
-        //     ...(stream!.stream!.value! as CommentModelResponse?)?.data ?? [],
-        //     ...(results!.data ?? []),
-        //   ] as CommentModelResponse?);
-        // }
+        results.data = results.data!.where((element) => element.isReply == false).toList();
         stream.sink.add(results);
         return results;
       }

@@ -39,13 +39,16 @@ class Data {
   String? comment;
   String? created;
   int? newsId;
+  bool? isReply;
   List<CommentsReplay>? commentsReplay;
 
   Data(
-      {this.nameActor,
+      {this.idComment,
+        this.nameActor,
         this.comment,
         this.created,
         this.newsId,
+        this.isReply,
         this.commentsReplay});
 
   Data.fromJson(Map<String, dynamic> json) {
@@ -54,6 +57,7 @@ class Data {
     comment = json['comment'];
     created = json['created'];
     newsId = json['newsId'];
+    isReply = json['isReply'];
     if (json['commentsReplay'] != null) {
       commentsReplay = <CommentsReplay>[];
       json['commentsReplay'].forEach((v) {
@@ -69,6 +73,7 @@ class Data {
     data['comment'] = this.comment;
     data['created'] = this.created;
     data['newsId'] = this.newsId;
+    data['isReply'] = this.isReply;
     if (this.commentsReplay != null) {
       data['commentsReplay'] =
           this.commentsReplay!.map((v) => v.toJson()).toList();
@@ -84,7 +89,8 @@ class CommentsReplay {
   String? created;
   int? newsId;
   Null? news;
-  Null? commentsReplay;
+  bool? isReply;
+  List<CommentsReplay>? commentsReplay;
 
   CommentsReplay(
       {this.idComment,
@@ -93,6 +99,7 @@ class CommentsReplay {
         this.created,
         this.newsId,
         this.news,
+        this.isReply,
         this.commentsReplay});
 
   CommentsReplay.fromJson(Map<String, dynamic> json) {
@@ -102,7 +109,13 @@ class CommentsReplay {
     created = json['created'];
     newsId = json['newsId'];
     news = json['news'];
-    commentsReplay = json['commentsReplay'];
+    isReply = json['isReply'];
+    if (json['commentsReplay'] != null) {
+      commentsReplay = <CommentsReplay>[];
+      json['commentsReplay'].forEach((v) {
+        commentsReplay!.add(new CommentsReplay.fromJson(v));
+      });
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -113,7 +126,11 @@ class CommentsReplay {
     data['created'] = this.created;
     data['newsId'] = this.newsId;
     data['news'] = this.news;
-    data['commentsReplay'] = this.commentsReplay;
+    data['isReply'] = this.isReply;
+    if (this.commentsReplay != null) {
+      data['commentsReplay'] =
+          this.commentsReplay!.map((v) => v.toJson()).toList();
+    }
     return data;
   }
 }

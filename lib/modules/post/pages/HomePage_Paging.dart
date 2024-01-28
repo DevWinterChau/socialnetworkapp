@@ -7,6 +7,7 @@ import '../../../common/mixin/scroll_page_mixin.dart';
 import '../../../providers/bloc_provider.dart';
 import '../models/PostReadRequest.dart';
 import '../widgets/ItemPost.dart';
+import '../widgets/SearchDelegate.dart';
 
 class HomePage_Paging extends StatefulWidget {
   const HomePage_Paging({super.key});
@@ -59,14 +60,22 @@ class _HomePage_PagingState extends State<HomePage_Paging>  with ScrollPageMixin
                 icon: Icon(Icons.add_circle_sharp),
                 color: Colors.white,
               ),
+              // IconButton(
+              //   onPressed: () async {
+              //     Logout();
+              //     // await _changeAppState();
+              //   },
+              //   icon: Icon(Icons.exit_to_app),
+              //   color: Colors.white,
+              // ),
               IconButton(
                 onPressed: () async {
-                  Logout();
-                  // await _changeAppState();
+                  showSearch(context: context, delegate: SearchSomethinDelegate());
                 },
-                icon: Icon(Icons.exit_to_app),
+                icon: Icon(Icons.search_outlined),
                 color: Colors.white,
               ),
+
             ],
           ),
           StreamBuilder<List<Post>?>(

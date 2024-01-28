@@ -72,6 +72,7 @@ class Routes {
 
 
   static Route<dynamic> UnauthorizedRoute(RouteSettings routeSettings) {
+    print(routeSettings.name);
     switch (routeSettings.name) {
       case "/":
         return _buildRoute(

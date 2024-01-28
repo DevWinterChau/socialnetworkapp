@@ -32,7 +32,6 @@ class CommentRepo {
         "comment",
         queryParameters: {"newsId": newsId}
       );
-      print('response getCommentByNewsId $response');
       if (response.statusCode == 200) {
         return CommentModelResponse.fromJson(response.data);
       }
