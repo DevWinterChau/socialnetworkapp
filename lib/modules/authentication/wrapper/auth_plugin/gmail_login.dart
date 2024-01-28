@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socialnetworkapp/modules/authentication/wrapper/auth_plugin/auth_plugin.dart';
 
 class AuthGmail implements AuthLogin{
@@ -18,8 +19,6 @@ class AuthGmail implements AuthLogin{
   @override
   Future<bool> isLoggedIn() {
     // TODO: implement isLoggedIn
-
-    // Trả về kết quả đã đăng nhập hay chưa..
     return _googleSignIn.isSignedIn();
   }
 
@@ -38,9 +37,9 @@ class AuthGmail implements AuthLogin{
           accessToken: googleSigInAuthentication?.accessToken,
           idToken: googleSigInAuthentication?.idToken,
         );
-        final usercredential =  await FirebaseAuth.instance.signInWithCredential(credential);
-        print(usercredential.user!.displayName);
-        // Đăng nhập thành công trả về trạng thái loggedIn và accessToken
+        await FirebaseAuth.instance.signInWithCredential(credential);
+        final prefs = await SharedPreferences.getInstance();
+        prefs.setString("gmail_token", googleSigInAuthentication!.accessToken!);
         return AuthResult(LoginStatus.loggedIn, googleSigInAuthentication.accessToken);
     }catch(e){
         return AuthResult(LoginStatus.error, null, errMessage: e.toString());

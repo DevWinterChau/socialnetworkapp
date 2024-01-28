@@ -65,15 +65,13 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _signInWithGoogle() async {
     try {
       final loginState = await authenbloc!.loginWithGmail();
-      print('Trạng thái đăng nhập : $loginState');
+      print('loginState $loginState');
       switch (loginState) {
         case LoginState.success:
           return _changeAppState();
         case LoginState.isNewUser:
-        // Xử lý trường hợp isNewUser
-          break;
-        default:
-        // Xử lý trường hợp khác (nếu cần)
+          return _changeAppStateIsnew();
+          default:
           break;
       }
     } on PlatformException catch (e) {
@@ -104,6 +102,9 @@ class _LoginPageState extends State<LoginPage> {
   }
   Future<void> _changeAppState() async{
     await appStateBloc!.changeAppState(AppState.authorized);
+  }
+  Future<void> _changeAppStateIsnew() async{
+    await appStateBloc!.changeAppState(AppState.registerAccount);
   }
   void _handleErrorPlatform(PlatformException exception) {
     // Xử lý lỗi dựa trên exception từ nền tảng

@@ -27,6 +27,7 @@ class CreatePostRepo {
       );
     }
   }
+
   Future<PostModelReponse?> getAllpost() async {
     try {
       final response = await _apiProvider.get(

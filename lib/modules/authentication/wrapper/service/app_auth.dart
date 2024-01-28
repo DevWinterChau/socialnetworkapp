@@ -23,15 +23,13 @@ class AppAuth{
     tm.Save();
   }
 
-  Future<LoginData?> _signIn(
-      AuthenCredential credential
-      ) async{
+  Future<LoginData?> _signIn(AuthenCredential credential)
+  async{
     try{
       final response = await _apiProvider.post(
         credential.url,
         data: credential.asMap(),
       );
-      print('dữ liệu trả về Server: $response');
       if(response.statusCode == 200){
         return LoginData.fromJson(response.data);
       }

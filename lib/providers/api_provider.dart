@@ -20,6 +20,7 @@ class ApiProvider {
   }
 
   ApiProvider.internal() {
+    print(ConfigEnv.getDomainAPI);
     final baseOption = BaseOptions(baseUrl: '${ConfigEnv.getDomainAPI}');
     _dio = Dio(baseOption);
     setupInterceptors();

@@ -50,8 +50,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
                   Text(currentUser!.displayName!),
-                  ElevatedButton(onPressed:(){
-                    _changeAppState();
+                  ElevatedButton(onPressed:() async{
+                      await appStateBloc!.logout();
+                      Navigator.pop(context);
                   }, child: Text('Đăng xuất')),
                 ],),);
               }
@@ -60,14 +61,11 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
     );
   }
-  Future<void> _changeAppState() async{
-    await appStateBloc!.changeAppState(AppState.unAuthorized);
-  }
   @override
   void dispose(){
     super.dispose();
-    appStateBloc!.dispose();
-    authenBloc!.dispose();
+    //appStateBloc!.dispose();
+    //authenBloc!.dispose();
   }
 }
 

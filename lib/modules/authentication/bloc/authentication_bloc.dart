@@ -23,8 +23,15 @@ class AuthenTicationBloc extends BlocBase {
   Future<LoginState?> _signIn(Future<Data?> signInmethod) async {
     try {
       final logindata = await signInmethod;
+      print('logindata ${logindata!.isNew!}');
       if (logindata != null) {
-        return LoginState.success;
+        if(logindata!.isNew! == false)
+          return LoginState.success;
+        else
+          return LoginState.isNewUser;
+      }
+      else{
+        return LoginState.fail;
       }
     } catch (e) {
       print(e);

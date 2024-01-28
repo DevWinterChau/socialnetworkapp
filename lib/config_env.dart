@@ -1,3 +1,3 @@
 class ConfigEnv{
-  static String getDomainAPI = "https://3dcb-2402-800-638e-942f-28b9-4a47-c86a-bc44.ngrok-free.app/api/";
+  static String getDomainAPI = "https://5d33-2402-800-63a4-d8c1-3880-6086-ec34-63aa.ngrok-free.app/api/";
 }

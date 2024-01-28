@@ -12,10 +12,8 @@ class AppAuthService {
   final _appauth = AppAuth();
   @override
   Future<Data?> LoginWithGmail() async {
-    print('LoginWithGmail');
     final _authGmail = AuthGmail();
     final authResult = await _authGmail.login();
-    print('accesstoken Gmail: ${authResult.accessToken}');
     if (authResult.accessToken != null) {
       final result = await _appauth.sigInWithCredential(
         GmailAuthProvider.getCredential(accessToken: authResult.accessToken),

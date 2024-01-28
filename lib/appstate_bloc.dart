@@ -1,8 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:socialnetworkapp/providers/bloc_provider.dart';
 
-enum  AppState {loading, unAuthorized, authorized}
+enum  AppState {loading, unAuthorized, authorized, registerAccount}
 
 class AppStateBloc implements BlocBase{
   final _appState = BehaviorSubject<AppState>.seeded(AppState.loading);
@@ -19,13 +20,16 @@ class AppStateBloc implements BlocBase{
   AppStateBloc(){
     launchApp();
   }
+
   Future<void> launchApp() async{
     final prefs = await SharedPreferences.getInstance();
     final authorlevel = prefs.getInt("authorized") ?? 0;
-    print("Cập nhật state : ${authorlevel}");
     switch(authorlevel){
       case 2:
         await changeAppState(AppState.authorized);
+        break;
+      case 3:
+        await changeAppState(AppState.registerAccount);
         break;
       default:
         await changeAppState(AppState.unAuthorized);
@@ -35,11 +39,13 @@ class AppStateBloc implements BlocBase{
   Future<void> changeAppState(AppState appState) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt("authorized", appState.index);
-    print('cap nhat appstate');
+    print('đã thay đổi');
     _appState.sink.add(appState);
+    print(appStateValue);
   }
 
   Future<void> logout() async {
+    FirebaseAuth.instance.signOut();
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
     await changeAppState(AppState.unAuthorized);

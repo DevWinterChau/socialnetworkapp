@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:socialnetworkapp/modules/authentication/bloc/register_bloc.dart';
+import 'package:socialnetworkapp/modules/authentication/login/register_account_page.dart';
+import 'package:socialnetworkapp/modules/authentication/wrapper/service/register_service.dart';
 import 'package:socialnetworkapp/modules/post/blocs/CreatePostBloc.dart';
 import 'package:socialnetworkapp/modules/post/pages/CreatePostPage.dart';
+import 'package:socialnetworkapp/modules/post/pages/HomePage_Paging.dart';
 import 'package:socialnetworkapp/modules/post/repos/CreatePostRepo.dart';
 import 'package:socialnetworkapp/routes/routes.dart';
 
@@ -10,7 +14,9 @@ import '../appstate_bloc.dart';
 import '../modules/authentication/bloc/authentication_bloc.dart';
 import '../modules/authentication/login/login_page.dart';
 import '../modules/authentication/wrapper/service/app_auth_service.dart';
+import '../modules/post/blocs/list_post_rxdart_bloc.dart';
 import '../modules/post/pages/HomePage.dart';
+import '../modules/post/repos/list_post_paging_repo.dart';
 import '../providers/bloc_provider.dart';
 
 class MainApp extends StatefulWidget {
@@ -52,11 +58,24 @@ class _MainAppStateState extends State<MainApp> {
                 return MaterialApp(
                   initialRoute: '/',
                    home: BloCProvider(
-                     child: HomePage(),
-                     bloc: createpostbloc,
+                     child: HomePage_Paging(),
+                     bloc: ListPostRxDartBloc(ListPostPageRepo()),
                    ),
                   onGenerateRoute: (settings) {
                     return Routes.authorizedRoute(settings);
+                  },
+                );
+              }
+              if (snapshot.data == AppState.registerAccount) {
+                print(snapshot.data);
+                return MaterialApp(
+                  initialRoute: '/',
+                  home: BloCProvider(
+                    child: RegisterAccountPage(),
+                    bloc: RegisterBloc(RegisterService()),
+                  ),
+                  onGenerateRoute: (settings) {
+                    return Routes.registernewAccount(settings);
                   },
                 );
               }

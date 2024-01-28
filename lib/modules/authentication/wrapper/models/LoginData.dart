@@ -25,18 +25,21 @@ class LoginData {
 class Data {
   String? accessToken;
   String? expiration;
-
-  Data({this.accessToken, this.expiration});
+  bool? isNew;
+  Data({this.accessToken, this.expiration, this.isNew});
 
   Data.fromJson(Map<String, dynamic> json) {
     accessToken = json['accessToken'];
     expiration = json['expiration'];
+    isNew = json['isNew'];
+
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['accessToken'] = this.accessToken;
     data['expiration'] = this.expiration;
+    data['isNew'] = this.isNew;
     return data;
   }
 }
