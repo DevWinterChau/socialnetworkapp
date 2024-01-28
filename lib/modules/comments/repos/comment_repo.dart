@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:socialnetworkapp/modules/comments/models/comment_create_model.dart';
+import 'package:socialnetworkapp/modules/comments/models/comment_reply_model.dart';
 import 'package:socialnetworkapp/modules/comments/models/comment_response_model.dart';
 import 'package:socialnetworkapp/providers/api_provider.dart';
 
@@ -39,6 +40,23 @@ class CommentRepo {
     } catch (e) {
       throw UnimplementedError(
         'getCommentByNewsId() is not implemented with err = $e',
+      );
+    }
+  }
+
+  Future<bool?> createCommentReply(CommentReplyRequestModel request) async {
+    try {
+      final response = await _apiProvider.post(
+        "comment/replaycomment",
+        data: request.toJson(),
+      );
+      if (response.statusCode == 200 && response.data['success'] == true) {
+        return response.data['success'];
+      }
+      return false;
+    } catch (e) {
+      throw UnimplementedError(
+        'createCommentReply() is not implemented with err = $e',
       );
     }
   }

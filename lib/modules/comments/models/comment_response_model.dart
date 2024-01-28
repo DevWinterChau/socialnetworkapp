@@ -34,6 +34,7 @@ class CommentModelResponse {
 }
 
 class Data {
+  int? idComment;
   String? nameActor;
   String? comment;
   String? created;
@@ -48,6 +49,7 @@ class Data {
         this.commentsReplay});
 
   Data.fromJson(Map<String, dynamic> json) {
+    idComment = json['idComment'];
     nameActor = json['nameActor'];
     comment = json['comment'];
     created = json['created'];
@@ -62,6 +64,7 @@ class Data {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['idComment'] = this.idComment;
     data['nameActor'] = this.nameActor;
     data['comment'] = this.comment;
     data['created'] = this.created;

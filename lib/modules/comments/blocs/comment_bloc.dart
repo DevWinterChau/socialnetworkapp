@@ -6,6 +6,7 @@ import 'package:socialnetworkapp/modules/post/models/PostReadRequest.dart';
 import 'package:socialnetworkapp/modules/post/repos/list_post_paging_repo.dart';
 
 import '../../../providers/bloc_provider.dart';
+import '../models/comment_reply_model.dart';
 import '../models/comment_response_model.dart';
 import '../models/comment_response_model.dart';
 import '../repos/comment_repo.dart';
@@ -52,6 +53,14 @@ class CommentRxDartBloc  extends BlocBase {
     }
     return false;
   }
+  Future<bool?> createCommentReply (CommentReplyRequestModel request)  async {
+    final results = await _repo.createCommentReply(request);
+    if(results == true){
+      return results;
+    }
+    return false;
+  }
+
   @override
   void dispose() {
 

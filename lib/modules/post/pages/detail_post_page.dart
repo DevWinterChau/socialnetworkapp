@@ -9,6 +9,7 @@ import 'package:socialnetworkapp/modules/comments/models/comment_response_model.
 import 'package:socialnetworkapp/providers/bloc_provider.dart';
 import 'dart:async';
 
+import '../../comments/models/comment_reply_model.dart';
 import '../models/PostReadRequest.dart';
 import '../widgets/ItemPost.dart';
 
@@ -21,7 +22,8 @@ class _DetailPostPageState extends State<DetailPostPage> {
 
    CommentRxDartBloc? get _commentbloc => BloCProvider.of<CommentRxDartBloc>(context);
    AuthenTicationBloc? get _authenbloc => BloCProvider.of<AuthenTicationBloc>(context);
-
+   late bool isShowReplyCmt = false;
+   late int idCommentCurrent = 0;
    late Post? post;
    @override
    void didChangeDependencies() {
@@ -60,9 +62,78 @@ class _DetailPostPageState extends State<DetailPostPage> {
                       itemCount: snapshot.data!.data!.length,
                       itemBuilder: (BuildContext context, int index) {
                         final commentItem = snapshot.data!.data![index];
+                        int idComment = commentItem!.idComment!;
                         return ListTile(
-                          title: Text(commentItem!.nameActor ??""),
-                          subtitle: Text(commentItem!.comment ??""),
+                          title: Text(commentItem!.nameActor ?? ""),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(commentItem!.comment ?? ""),
+                              SizedBox(height: 2),
+                              Row(
+                                children: [
+                                  Text(calculateTimeCmt(commentItem!.created), style: TextStyle(color: Colors.black, fontSize: 10)),
+                                  SizedBox(width: 5,),
+                                  GestureDetector(
+                                    onTap: (){
+                                      setState(() {
+                                        isShowReplyCmt = !isShowReplyCmt;
+                                        idCommentCurrent = idComment ;
+                                      });
+                                    },
+                                    child: Text("Trả lời" , style: TextStyle(color: Colors.blue, fontSize: 10)),
+                                  ),
+                                ],
+                              ),
+                              isShowReplyCmt == true && commentItem.idComment == idCommentCurrent
+                                  ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  rowCommentReplyWidget(post!, commentItem.idComment ??0)
+                                ],
+                              ) : SizedBox(height: 1,),
+                              // commentItem!.commentsReplay! != null ?
+                              //   ListView.builder(
+                              //   itemCount: commentItem!.commentsReplay!.length,
+                              //   itemBuilder: (BuildContext context, int index) {
+                              //     final commentItemReply = commentItem!.commentsReplay![index];
+                              //     int idComment = commentItemReply!.idComment!;
+                              //     return ListTile(
+                              //         title: Text(commentItemReply!.nameActor ?? ""),
+                              //         subtitle: Column(
+                              //           crossAxisAlignment: CrossAxisAlignment.start,
+                              //           children: [
+                              //             Text(commentItemReply!.comment ?? ""),
+                              //             SizedBox(height: 2),
+                              //             Row(
+                              //               children: [
+                              //                 Text(calculateTimeCmt(commentItem!.created), style: TextStyle(color: Colors.black, fontSize: 10)),
+                              //                 SizedBox(width: 5,),
+                              //                 GestureDetector(
+                              //                   onTap: (){
+                              //                     setState(() {
+                              //                       isShowReplyCmt = !isShowReplyCmt;
+                              //                       idCommentCurrent = idComment ;
+                              //                     });
+                              //                   },
+                              //                   child: Text("Trả lời" , style: TextStyle(color: Colors.blue, fontSize: 10)),
+                              //                 ),
+                              //               ],
+                              //             ),
+                              //             isShowReplyCmt == true && commentItemReply.idComment == idCommentCurrent
+                              //                 ? Column(
+                              //               crossAxisAlignment: CrossAxisAlignment.start,
+                              //               children: [
+                              //                 rowCommentReplyWidget(post!, commentItemReply.idComment ??0)
+                              //               ],
+                              //             ) : SizedBox(height: 1,),
+                              //           ],
+                              //         )
+                              //     );
+                              //   },
+                              // ): SizedBox()
+                        ],
+                          )
                         );
                       },
                     );
@@ -70,10 +141,6 @@ class _DetailPostPageState extends State<DetailPostPage> {
                   else{
                     return Center(child: CircularProgressIndicator(color: Colors.blueAccent,),);
                   }
-                  // if(!snapshot.hasData){
-                  //   return Center(child: Text("Bài viết chưa có bình luận ...", style: TextStyle(color: Colors.grey, fontStyle: FontStyle.italic, fontSize: 10),));
-                  // }
-                  return SizedBox(height: 100,);
                 },
               ),
             ),
@@ -85,7 +152,40 @@ class _DetailPostPageState extends State<DetailPostPage> {
     );
   }
 
-  Widget rowCommentWidget(Post post) {
+   Widget rowCommentReplyWidget(Post post, int idComment) {
+     final commentController = TextEditingController();
+     return Row(
+         mainAxisAlignment: MainAxisAlignment.end,
+         crossAxisAlignment: CrossAxisAlignment.end,
+         children: [
+           Flexible(flex: 8, child: TextField(
+             controller: commentController,
+             decoration: InputDecoration(
+               hintText: "Nhập câu trả lời ...",
+               labelText: 'Trả lời',
+             ),
+           ),),
+           Flexible(flex: 1,child:  ClipOval(
+             child: IconButton(
+               color: Colors.blue,
+               icon: Icon(Icons.send_sharp),
+               onPressed: () async {
+                 if(commentController.text == ""){
+                   return;
+                 }
+                 var rs = await _CreateCommentReply(post,commentController.text, idComment);
+                 if(rs == true){
+                   commentController.clear();
+                 }
+               },
+             ),
+           ),),
+         ],
+       );
+   }
+
+
+   Widget rowCommentWidget(Post post) {
     final commentController = TextEditingController();
     return Container(
       child: Row(
@@ -97,6 +197,7 @@ class _DetailPostPageState extends State<DetailPostPage> {
             child: TextField(
               controller: commentController,
               decoration: InputDecoration(
+                hintText: "Nhập bình luận ...",
                 labelText: 'Bình luận',
               ),
             ),
@@ -111,7 +212,10 @@ class _DetailPostPageState extends State<DetailPostPage> {
                   if(commentController.text == ""){
                     return;
                   }
-                  _CreateComment(post,commentController.text );
+                  var rs = await _CreateComment(post,commentController.text);
+                  if(rs == true){
+                    commentController.clear();
+                  }
                 },
               ),
             ),
@@ -120,19 +224,56 @@ class _DetailPostPageState extends State<DetailPostPage> {
       ),
     );
   }
-  Future<void> _CreateComment(Post post, String comment) async{
+  Future<bool?> _CreateComment(Post post, String comment) async{
     final nameactor = FirebaseAuth.instance.currentUser!.displayName!;
 
     final commentRequest = CommentCreateModel(nameActor: nameactor?? "No name" , comment: comment, created: DateTime.now(), newsId: post!.id?? 0);
     final results = await _commentbloc!.createComment(commentRequest);
     if(results == true){
-      toast("Bình luận thành công ...");
       _commentbloc!.getCommentsByNewsId(post!.id?? 0);
+      return true;
     }
     else{
-      toast("Bình luận không hành công ...");
+      toast("Bình luận không thành công ...");
+      return false;
     }
   }
+  Future<bool?> _CreateCommentReply(Post post, String comment, int idComment) async{
+     final nameactor = FirebaseAuth.instance.currentUser!.displayName!;
+     final commentRequest = CommentReplyRequestModel(nameActor: nameactor?? "No name" , comment: comment, created: DateTime.now(), newsId: post!.id?? 0, commentIdReplay:  idComment);
+     final results = await _commentbloc!.createCommentReply(commentRequest);
+     if(results == true){
+       _commentbloc!.getCommentsByNewsId(post!.id?? 0);
+       return true;
+     }
+     else{
+       toast("Trả lời bình luận không thành công ...");
+       return false;
+     }
+   }
+
+   String calculateTimeCmt(String? created) {
+     if (created == null) {
+       return ""; // Hoặc bạn có thể trả về một giá trị mặc định khác
+     }
+
+     final commentDate = DateTime.parse(created);
+     final now = DateTime.now();
+     final difference = now.difference(commentDate);
+
+     if (difference.inMinutes == 0) {
+       return "Hiện tại";
+     } else if (difference.inMinutes < 60) {
+       return "${difference.inMinutes} phút trước";
+     } else if (difference.inHours < 24) {
+       return "${difference.inHours} giờ trước";
+     } else if (commentDate.year == now.year) {
+       return "${commentDate.day} tháng ${commentDate.month} lúc ${commentDate.hour}:${commentDate.minute}";
+     } else {
+       return "${commentDate.day} tháng ${commentDate.month} ${commentDate.year} lúc ${commentDate.hour}:${commentDate.minute}";
+     }
+   }
+
 }
 
 
